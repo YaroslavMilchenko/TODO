@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TODO List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div>
+        {% if user.is_authenticated %}
+        <h3>Hi, {{user.username}}!</h3>
+    </div>
+</body>
+</html>
