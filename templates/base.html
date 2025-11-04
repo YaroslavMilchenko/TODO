@@ -5,9 +5,27 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div>
-        {% if user.is_authenticated %}
-        <h3>Hi, {{user.username}}!</h3>
+    <div class = "navbar">
+            {% if user.is_authenticated %}
+        <span>Hi, {{user.username}}!</span>
+        <a href="{{ url_for('logout') }}" class = "btn">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}" class = "btn">Log in</a> | 
+            <a href="{{ url_for('register') }}" class = "btn">Register</a>
+        {% endif %}
     </div>
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash flash-{{ 'error' if category == 'error' else 'success' }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+    {% block content %}
+    {% endblock %}
 </body>
 </html>

@@ -40,8 +40,54 @@ class Task(db.Model):
     def __repr__(self):
         return f'<Task {self.text[:20]}>'
 
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        user_username = request.form["username"]
+        user_password = request.form["password"]
+        hash_password = generate_password_hash(user_password)
+        new_user = User(username = user_username, password = hash_password)
+        
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            flash("Error, this name is taken", 'error')
+            return render_template("register.html")
+        except:
+            db.session.rollback()
+            flash("Unknown error", 'error')
+            return render_template("register.html")
+    else:
+        return render_template("register.html")
 
-
+@app.route("/login", methods = ["GET", "POST"])
+def login():
+    if request.method == "POST":
+        user_username = request.form["username"]
+        user_password = request.form["password"]
+        
+        user = User.query.filter_by(username=user_username).first()
+        
+        if user and check_password_hash(user.password, user_password):
+            login_user(user)
+            flash("Login success", 'success')
+            return redirect(url_for('home'))
+        else:
+            flash("Error! Uncorrect login or password!", 'error')
+            return redirect(url_for('login'))
+    else:
+        return render_template("login.html")
+            
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash("You are logged out", 'info')
+    return redirect(url_for('home'))
+            
+        
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
