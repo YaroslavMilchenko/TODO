@@ -51,6 +51,9 @@ def register():
         try:
             db.session.add(new_user)
             db.session.commit()
+            
+            flash("Registration successful!", 'success')
+            return(redirect(url_for('login')))
         except IntegrityError:
             db.session.rollback()
             flash("Error, this name is taken", 'error')
@@ -87,6 +90,25 @@ def logout():
     flash("You are logged out", 'info')
     return redirect(url_for('home'))
             
+@app.route("/", methods = ["GET", "POST"])
+@login_required
+def home():
+    if request.method == "POST":
+        task_text = request.form['task-text']
+        if task_text:
+            new_task = Task(text = task_text, author = current_user)
+            
+            try:
+                db.session.add(new_task)
+                db.session.commit()
+                flash("Task added", 'success')
+            except:
+                flash("Error, try more", 'error')
+        return redirect(url_for('home'))
+    else:
+        user_tasks = current_user.tasks
+        return render_template("index.html", tasks=user_tasks)
+        
         
 if __name__ == "__main__":
     with app.app_context():

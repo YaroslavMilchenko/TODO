@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+    <form action="{{url_for('home')}}" method="POST">
+        <div class="form-group">
+            <label for="task-text">New task:</label>
+            <input type="text" name="task-text" id="task-text">
+            <button type="submit">Add</button>
+        </div>
+    </form>
+
+    {% for task in tasks %}
+        <div class="task-box">
+            <p style="text-decoration: {% if task.completed %}line-through{% else %}none{% endif %};">
+                {{task.text}}
+            </p>
+        </div>
+    {% else %}
+        <p>Task list is empty!</p>
+    {% endfor %}
+{% endblock %}

@@ -6,9 +6,9 @@
 </head>
 <body>
     <div class = "navbar">
-            {% if user.is_authenticated %}
-        <span>Hi, {{user.username}}!</span>
-        <a href="{{ url_for('logout') }}" class = "btn">Logout</a>
+        {% if current_user.is_authenticated %}
+            <span>Hi, {{current_user.username}}!</span>
+            <a href="{{ url_for('logout') }}" class = "btn">Logout</a>
         {% else %}
             <a href="{{ url_for('login') }}" class = "btn">Log in</a> | 
             <a href="{{ url_for('register') }}" class = "btn">Register</a>
