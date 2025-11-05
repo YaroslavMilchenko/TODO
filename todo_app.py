@@ -109,7 +109,40 @@ def home():
         user_tasks = current_user.tasks
         return render_template("index.html", tasks=user_tasks)
         
-        
+@app.route("/delete/<int:task_id>", methods=["POST"])
+@login_required
+def delete_task(task_id):
+    task_to_delete = Task.query.get_or_404(task_id)
+    
+    if task_to_delete.author != current_user:
+        flash("You can`t delete not your task!", 'error')
+        return redirect(url_for('home'))
+    
+    try:
+        db.session.delete(task_to_delete)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        flash("Error, try more!", 'error')
+    return redirect(url_for('home'))
+
+@app.route("/toggle/<int:task_id>", methods=["POST"])
+@login_required
+def toggle_task(task_id):
+    task_to_toggle = Task.query.get_or_404(task_id)
+    
+    if task_to_toggle.author != current_user:
+        flash("You can`t toggle not your task!", 'error')
+        return redirect(url_for('home'))
+    
+    try:
+        task_to_toggle.completed = not task_to_toggle.completed 
+        db.session.commit()
+    except:
+        db.session.rollback()
+        flash("Error, try more!", 'error')
+    return redirect(url_for('home'))
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
